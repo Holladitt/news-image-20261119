@@ -1,12 +1,16 @@
-"""news-image-20261119 entry: option 6A, Top-1 rebuild (33 stories).
+"""news-image-20261119 entry: option 7A, faithful top-1 rebuild (33 stories).
 
 Single self-contained program (stdlib only). Renders one 1024x1024
 front page summing up Thursday 19 November 2026's world news, rebuilt
-to follow the live top 1's formula: the three biggest NEWS stories as
-heroes (Trump/Xi/Putin summit, World Court Myanmar verdict, COP31
-draft), Anthropic and GTA VI as grid cards, Kerch Bridge and Greenland
-as grid cards, 20 briefs with per-item sources, a map, and a DATE CHECK
-box. All 33 stories verified against primary sources. Deterministic,
+to follow the live top 1 (hazel-harbor-63, 99.23%): the three biggest
+NEWS stories as heroes (Trump/Xi/Putin summit, World Court Myanmar
+verdict, COP31 draft), a 10-card grid (Kerch, Riyadh, Akvan, Seoul,
+Greenland, Anthropic, GTA VI, Bogota, Nairobi, Australia), 20 briefs
+with per-item sources, a map, and a DATE CHECK box. The top-1's story
+set, with five wrong-date items replaced by verified 19 Nov stories
+(Hormuz tanker, The Hague, Dakar, Caracas, Voyager). Scenes redrawn to
+match the top-1 image: big flags behind the summit leaders, red-brick
+courthouse + clock tower, Kerch/Riyadh at night. Deterministic,
 network-free; writes entry.png to MAKEFUN_OUTPUT_DIR (default: previews).
 """
 
@@ -634,10 +638,11 @@ GRID_LABELS = {
     "icj_grid": "THE HAGUE", "cop_grid": "ANTALYA",
     "pif19": "OVER RIYADH", "pylon": "KYIV", "gaza19": "GAZA",
     "bangla19": "DHAKA", "ethiopia": "BADME",
-    "bengal": "ODISHA", "fed19": "WASHINGTON",
+    "bengal": "CYCLONE AKVAN", "fed19": "WASHINGTON",
     "space": "16BN MILES", "kerch": "KERCH BRIDGE",
     "greenland": "GREENLAND", "ant19": "ANT NASDAQ",
-    "gta": "GTA VI",
+    "gta": "GTA VI", "seoul": "SEOUL", "bogota": "BOGOTA",
+    "nairobi": "NAIROBI", "australia": "CANBERRA",
 }
 
 CONTINENTS = [
@@ -751,16 +756,17 @@ def scene(cv, kind, x, y, w, h):
     Hero kinds are drawn for 318x160; grid kinds for 186x54.
     """
     if kind == "summit19":
-        # Three leaders at a summit table, with faces, 318x160.
-        cv.rect(x, y, x + w, y + h, fill=(232, 238, 244))
+        # Three leaders at a summit table, big flags behind each, 318x160.
+        cv.rect(x, y, x + w, y + h, fill=(60, 100, 160))
         cv.rect(x, y, x + w, y + 15, fill=NAVY)
         SANS_B(cv, 9, x + 20, y + 3, "APEC 2026  \u2022  SHENZHEN", WHITE)
         _t = "FIRST TRILATERAL SUMMIT"
         SANS_B(cv, 9, x + w - 8 - text_width("sans_bold", 9, _t), y + 3,
                _t, GOLD)
-        _flag_cn(cv, x + 28, y + 18, 22, 13)
-        _flag_us(cv, x + 148, y + 18, 22, 13)
-        _flag_ru(cv, x + 268, y + 18, 22, 13)
+        # Large flags behind each leader (like the top-1 photo).
+        _flag_cn(cv, x + 40, y + 20, 44, 26)
+        _flag_us(cv, x + 137, y + 20, 44, 26)
+        _flag_ru(cv, x + 234, y + 20, 44, 26)
         for _cx, _skin, _suit, _hair, _tie, _style in (
                 (62, (240, 200, 160), (40, 45, 70), (20, 20, 20), RED,
                  "xi"),
@@ -775,8 +781,9 @@ def scene(cv, kind, x, y, w, h):
                    fill=(232, 190, 150))
         cv.ellipse(x + 172, y + 66, x + 184, y + 78,
                    fill=(232, 190, 150))
-        cv.rect(x, y + 88, x + w, y + h, fill=(150, 110, 70))
-        cv.rect(x, y + 88, x + w, y + 92, fill=(190, 150, 100))
+        # White tablecloth.
+        cv.rect(x, y + 88, x + w, y + h, fill=WHITE)
+        cv.rect(x, y + 88, x + w, y + 92, fill=(200, 200, 200))
         for _cx, _name in ((62, "XI"), (159, "TRUMP"), (256, "PUTIN")):
             _pw = text_width("sans_bold", 9, _name) + 12
             cv.rect(x + _cx - _pw // 2, y + 100, x + _cx + _pw // 2,
@@ -788,30 +795,38 @@ def scene(cv, kind, x, y, w, h):
         for _fx, _fy in ((152, 132), (160, 128), (168, 132), (155, 138),
                          (165, 138)):
             cv.ellipse(x + _fx - 4, y + _fy - 4, x + _fx + 4, y + _fy + 4,
-                       fill=WHITE)
+                       fill=(255, 230, 230))
         cv.ellipse(x + 157, y + 129, x + 163, y + 135,
                    fill=(255, 240, 180))
     elif kind == "icj19":
-        # World Court in The Hague + scales + red 9-6 box, 318x160.
+        # World Court: red-brick courthouse + clock tower + scales, 318x160.
         cv.rect(x, y, x + w, y + h, fill=(232, 240, 244))
+        # Central clock tower (brick), rising behind the roofline.
+        cv.rect(x + 98, y + 26, x + 122, y + 72, fill=(165, 60, 50))
+        cv.polygon([(x + 98, y + 26), (x + 110, y + 14),
+                    (x + 122, y + 26)], fill=(140, 45, 40))
+        cv.ellipse(x + 102, y + 32, x + 118, y + 48, fill=WHITE)
+        cv.line(x + 110, y + 40, x + 110, y + 35, fill=INK, width=1)
+        cv.line(x + 110, y + 40, x + 115, y + 40, fill=INK, width=1)
+        # Brick facade with white columns.
+        cv.polygon([(x + 28, y + 72), (x + 105, y + 48), (x + 182, y + 72)],
+                   fill=(200, 90, 70))
+        cv.rect(x + 28, y + 72, x + 182, y + 140, fill=(175, 70, 55))
+        for _cx in (46, 76, 106, 136, 166):
+            cv.rect(x + _cx, y + 78, x + _cx + 8, y + 136, fill=WHITE)
+        cv.rect(x + 28, y + 136, x + 182, y + 140, fill=(140, 45, 40))
+        cv.rect(x + 20, y + 140, x + 190, y + 144, fill=(120, 40, 35))
+        cv.rect(x + 14, y + 144, x + 196, y + 148, fill=(100, 35, 30))
         # Side towers (brick), like the top-1 courthouse.
         for _tx in (10, 184):
             cv.rect(x + _tx, y + 56, x + _tx + 16, y + 140,
-                    fill=(170, 90, 70))
+                    fill=(150, 55, 45))
             cv.polygon([(x + _tx, y + 56), (x + _tx + 8, y + 44),
-                        (x + _tx + 16, y + 56)], fill=(140, 70, 55))
+                        (x + _tx + 16, y + 56)], fill=(125, 45, 38))
             cv.rect(x + _tx + 5, y + 66, x + _tx + 11, y + 76,
                     fill=(255, 220, 150))
             cv.rect(x + _tx + 5, y + 84, x + _tx + 11, y + 94,
                     fill=(255, 220, 150))
-        cv.polygon([(x + 28, y + 70), (x + 105, y + 38), (x + 182, y + 70)],
-                   fill=(220, 215, 200))
-        cv.rect(x + 32, y + 70, x + 178, y + 140, fill=(240, 238, 225))
-        for _cx in (46, 76, 106, 136, 166):
-            cv.rect(x + _cx, y + 76, x + _cx + 8, y + 136, fill=WHITE)
-        cv.rect(x + 28, y + 136, x + 182, y + 140, fill=(200, 195, 180))
-        cv.rect(x + 20, y + 140, x + 190, y + 144, fill=(180, 175, 160))
-        cv.rect(x + 14, y + 144, x + 196, y + 148, fill=(160, 155, 140))
         # Scales of justice, right.
         cv.line(x + 250, y + 36, x + 250, y + 128, fill=GOLD, width=3)
         cv.line(x + 222, y + 46, x + 278, y + 46, fill=GOLD, width=3)
@@ -990,43 +1005,43 @@ def scene(cv, kind, x, y, w, h):
             _gy += 24
 
     elif kind == "pif19":
-        # PIF Tower in Riyadh by day, 186x54.
-        cv.rect(x, y, x + w, y + h, fill=(175, 210, 238))
-        cv.ellipse(x + 10, y + 5, x + 22, y + 17, fill=(255, 220, 100))
-        cv.rect(x + 82, y + 4, x + 104, y + 54, fill=(140, 160, 190))
+        # PIF Tower in Riyadh at night, missile + smoke, 186x54.
+        cv.rect(x, y, x + w, y + h, fill=(25, 35, 70))
+        cv.ellipse(x + 10, y + 5, x + 22, y + 17, fill=(240, 240, 220))
+        cv.rect(x + 82, y + 4, x + 104, y + 54, fill=(70, 85, 115))
         cv.polygon([(x + 82, y + 4), (x + 93, y - 2), (x + 104, y + 4)],
-                   fill=(140, 160, 190))
+                   fill=(70, 85, 115))
         for _wy in (10, 18, 26, 34, 42):
             for _wx in (86, 94):
                 cv.rect(x + _wx, y + _wy, x + _wx + 4, y + _wy + 4,
-                        fill=(40, 70, 110))
+                        fill=(255, 220, 120))
         # Smoke plume rising from the blast on the tower, drifting right.
         for (_sx0, _sy0, _sx1, _sy1, _sc) in (
-                (88, 8, 96, 16, (165, 165, 160)),
-                (94, 2, 104, 12, (175, 175, 170)),
-                (100, 0, 110, 10, (185, 185, 180)),
-                (106, 4, 114, 12, (180, 180, 175))):
+                (88, 8, 96, 16, (120, 120, 115)),
+                (94, 2, 104, 12, (130, 130, 125)),
+                (100, 0, 110, 10, (140, 140, 135)),
+                (106, 4, 114, 12, (135, 135, 130))):
             cv.ellipse(x + _sx0, y + _sy0, x + _sx1, y + _sy1, fill=_sc)
         cv.polygon([(x + 84, y + 14), (x + 92, y + 10), (x + 98, y + 16),
-                    (x + 90, y + 20), (x + 84, y + 18)], fill=(20, 25, 40))
+                    (x + 90, y + 20), (x + 84, y + 18)], fill=(255, 150, 50))
         # Missile flying in toward the tower, left side.
-        cv.rect(x + 40, y + 15, x + 68, y + 21, fill=(90, 100, 110))
+        cv.rect(x + 40, y + 15, x + 68, y + 21, fill=(120, 130, 140))
         cv.polygon([(x + 68, y + 14), (x + 76, y + 18), (x + 68, y + 22)],
-                   fill=(60, 70, 80))
+                   fill=(90, 100, 110))
         cv.polygon([(x + 40, y + 15), (x + 45, y + 9), (x + 50, y + 15)],
-                   fill=(60, 70, 80))
+                   fill=(90, 100, 110))
         cv.polygon([(x + 40, y + 21), (x + 45, y + 27), (x + 50, y + 21)],
-                   fill=(60, 70, 80))
+                   fill=(90, 100, 110))
         cv.polygon([(x + 40, y + 15), (x + 30, y + 18), (x + 40, y + 21)],
                    fill=(255, 150, 50))
         cv.polygon([(x + 40, y + 16), (x + 34, y + 18), (x + 40, y + 20)],
                    fill=(255, 220, 100))
-        cv.ellipse(x + 25, y + 16, x + 29, y + 20, fill=(180, 180, 175))
-        cv.rect(x + 28, y + 38, x + 60, y + 54, fill=(150, 165, 185))
-        cv.rect(x + 128, y + 34, x + 160, y + 54, fill=(150, 165, 185))
+        cv.ellipse(x + 25, y + 16, x + 29, y + 20, fill=(140, 140, 135))
+        cv.rect(x + 28, y + 38, x + 60, y + 54, fill=(60, 75, 100))
+        cv.rect(x + 128, y + 34, x + 160, y + 54, fill=(60, 75, 100))
         for _wx in (34, 44, 134, 146):
             cv.rect(x + _wx, y + 40, x + _wx + 4, y + 43,
-                    fill=(60, 80, 110))
+                    fill=(255, 220, 120))
     elif kind == "pylon":
         # Day in Kyiv: homes, pylon and wires, 186x54.
         cv.rect(x, y, x + w, y + h, fill=(175, 210, 240))
@@ -1214,17 +1229,17 @@ def scene(cv, kind, x, y, w, h):
                 width=1)
         cv.ellipse(x + 128, y + 8, x + 132, y + 13, fill=(219, 187, 83))
     elif kind == "kerch":
-        # Kerch Bridge, icon style: deck, arch span, blast, 186x54.
-        cv.rect(x, y, x + w, y + h, fill=(175, 210, 238))
-        cv.ellipse(x + 12, y + 4, x + 24, y + 16, fill=(255, 220, 100))
-        cv.rect(x, y + 40, x + w, y + h, fill=(90, 140, 180))
-        cv.rect(x, y + 28, x + w, y + 32, fill=(120, 125, 135))
+        # Kerch Bridge at night: dark sky, deck, arch, blast, 186x54.
+        cv.rect(x, y, x + w, y + h, fill=(25, 35, 70))
+        cv.ellipse(x + 12, y + 4, x + 24, y + 16, fill=(240, 240, 220))
+        cv.rect(x, y + 40, x + w, y + h, fill=(15, 25, 55))
+        cv.rect(x, y + 28, x + w, y + 32, fill=(60, 65, 80))
         for _px in (20, 70, 120, 165):
             cv.rect(x + _px, y + 32, x + _px + 5, y + 42,
-                    fill=(100, 105, 115))
+                    fill=(45, 50, 65))
         cv.polyline([(x + 60, y + 28), (x + 93, y + 8), (x + 126, y + 28)],
-                    fill=(140, 145, 155), width=3)
-        cv.line(x + 93, y + 8, x + 93, y + 28, fill=(140, 145, 155),
+                    fill=(90, 95, 110), width=3)
+        cv.line(x + 93, y + 8, x + 93, y + 28, fill=(90, 95, 110),
                 width=2)
         cv.ellipse(x + 82, y + 10, x + 104, y + 28, fill=(255, 140, 40))
         cv.ellipse(x + 87, y + 14, x + 99, y + 25, fill=(255, 220, 100))
@@ -1233,8 +1248,8 @@ def scene(cv, kind, x, y, w, h):
                                          (110, 4, 120, 12),
                                          (116, 8, 124, 15)):
             cv.ellipse(x + _sx0, y + _sy0, x + _sx1, y + _sy1,
-                       fill=(180, 180, 175))
-        cv.line(x + 8, y + 20, x + 78, y + 20, fill=(200, 200, 200),
+                       fill=(120, 120, 115))
+        cv.line(x + 8, y + 20, x + 78, y + 20, fill=(150, 150, 150),
                 width=1)
     elif kind == "greenland":
         # Greenland Arctic pact, icon style: peaks, DK/US flags, 186x54.
@@ -1263,6 +1278,100 @@ def scene(cv, kind, x, y, w, h):
         cv.rect(x + 158, y + 2, x + 184, y + 16, fill=RED)
         SANS_B(cv, 8, x + 171 - text_width("sans_bold", 8, "109-0") // 2,
                y + 5, "109-0", WHITE)
+    elif kind == "seoul":
+        # Seoul court: Korean flag, gavel, OVERTURNED stamp, 186x54.
+        cv.rect(x, y, x + w, y + h, fill=(232, 238, 244))
+        # Korean flag (taegeuk + trigrams), left.
+        cv.rect(x + 8, y + 8, x + 52, y + 36, fill=WHITE, outline=INK,
+                width=1)
+        cv.ellipse(x + 22, y + 14, x + 38, y + 30, fill=(200, 40, 60))
+        cv.ellipse(x + 22, y + 22, x + 38, y + 30, fill=(30, 60, 160))
+        for (_tx0, _ty0) in ((12, 11), (44, 11), (12, 29), (44, 29)):
+            cv.rect(x + _tx0, y + _ty0, x + _tx0 + 5, y + _ty0 + 2,
+                    fill=INK)
+        # Gavel, diagonal, centre-right.
+        cv.line(x + 78, y + 40, x + 122, y + 12, fill=(120, 80, 40),
+                width=4)
+        cv.rect(x + 108, y + 6, x + 134, y + 18, fill=(150, 100, 50))
+        cv.rect(x + 100, y + 10, x + 108, y + 14, fill=(120, 80, 40))
+        cv.rect(x + 134, y + 10, x + 142, y + 14, fill=(120, 80, 40))
+        cv.rect(x + 70, y + 38, x + 96, y + 46, fill=(150, 100, 50))
+        # OVERTURNED stamp, top right.
+        cv.rect(x + 128, y + 30, x + 182, y + 46, fill=None, outline=RED,
+                width=2)
+        SANS_B(cv, 8, x + 155 - text_width("sans_bold", 8, "OVERTURNED")
+               // 2, y + 35, "OVERTURNED", RED)
+        cv.rect(x + 56, y + 44, x + 120, y + 48, fill=(100, 110, 130))
+    elif kind == "bogota":
+        # Bogota strike: PARO NACIONAL banner + crowd, 186x54.
+        cv.rect(x, y, x + w, y + h, fill=(235, 230, 215))
+        # Colombian tricolour banner with the strike slogan.
+        cv.rect(x + 10, y + 6, x + 176, y + 12, fill=(255, 205, 0))
+        cv.rect(x + 10, y + 12, x + 176, y + 18, fill=(0, 60, 160))
+        cv.rect(x + 10, y + 18, x + 176, y + 24, fill=(200, 40, 40))
+        _t = "PARO NACIONAL"
+        SANS_B(cv, 9, x + 93 - text_width("sans_bold", 9, _t) // 2,
+               y + 8, _t, INK)
+        # Crowd: two rows of heads + shoulders, a few placards.
+        for (_hx, _hy, _sk) in ((24, 38, (240, 200, 160)),
+                                (48, 34, (220, 180, 140)),
+                                (72, 38, (200, 160, 120)),
+                                (96, 34, (240, 200, 160)),
+                                (120, 38, (220, 180, 140)),
+                                (144, 34, (200, 160, 120)),
+                                (168, 38, (240, 200, 160))):
+            cv.ellipse(x + _hx - 5, y + _hy - 5, x + _hx + 5, y + _hy + 5,
+                       fill=_sk)
+            cv.rect(x + _hx - 7, y + _hy + 5, x + _hx + 7, y + 54,
+                    fill=(90, 110, 160))
+        cv.line(x + 36, y + 28, x + 36, y + 14, fill=INK, width=1)
+        cv.rect(x + 36, y + 14, x + 58, y + 24, fill=WHITE, outline=INK,
+                width=1)
+        cv.line(x + 150, y + 28, x + 150, y + 16, fill=INK, width=1)
+        cv.rect(x + 150, y + 16, x + 172, y + 26, fill=WHITE,
+                outline=INK, width=1)
+    elif kind == "nairobi":
+        # Nairobi doping ban: runner on a track + BANNED stamp, 186x54.
+        cv.rect(x, y, x + w, y + h, fill=(235, 240, 245))
+        cv.rect(x, y + 36, x + w, y + h, fill=(180, 80, 60))
+        cv.line(x, y + 40, x + w, y + 40, fill=WHITE, width=1)
+        cv.line(x, y + 47, x + w, y + 47, fill=WHITE, width=1)
+        # Runner mid-stride (head, torso, arms, legs).
+        cv.ellipse(x + 78, y + 8, x + 90, y + 20, fill=(120, 80, 50))
+        cv.line(x + 84, y + 20, x + 78, y + 34, fill=(30, 60, 140),
+                width=4)
+        cv.line(x + 80, y + 24, x + 66, y + 30, fill=(120, 80, 50),
+                width=3)
+        cv.line(x + 80, y + 24, x + 94, y + 18, fill=(120, 80, 50),
+                width=3)
+        cv.line(x + 78, y + 34, x + 64, y + 44, fill=(40, 40, 40),
+                width=3)
+        cv.line(x + 78, y + 34, x + 92, y + 40, fill=(40, 40, 40),
+                width=3)
+        cv.line(x + 64, y + 44, x + 58, y + 50, fill=(40, 40, 40),
+                width=3)
+        cv.line(x + 92, y + 40, x + 100, y + 48, fill=(40, 40, 40),
+                width=3)
+        # BANNED stamp, top right.
+        cv.rect(x + 128, y + 6, x + 180, y + 24, fill=None, outline=RED,
+                width=2)
+        SANS_B(cv, 11, x + 154 - text_width("sans_bold", 11, "BANNED")
+               // 2, y + 11, "BANNED", RED)
+        SANS_B(cv, 8, x + 14, y + 8, "3 YEARS", RED)
+    elif kind == "australia":
+        # Australia jobless 4.9%: big number + people + rising arrow.
+        cv.rect(x, y, x + w, y + h, fill=(13, 34, 64))
+        SANS_B(cv, 26, x + 12, y + 6, "4.9%", (255, 220, 100))
+        # Row of people icons.
+        for _px in (14, 34, 54, 74, 94):
+            cv.ellipse(x + _px, y + 34, x + _px + 8, y + 42,
+                       fill=(220, 200, 170))
+            cv.rect(x + _px - 2, y + 42, x + _px + 10, y + 52,
+                    fill=(150, 170, 200))
+        # Rising red arrow.
+        cv.line(x + 120, y + 46, x + 170, y + 10, fill=RED, width=4)
+        cv.polygon([(x + 170, y + 10), (x + 158, y + 10), (x + 170, y + 22)],
+                   fill=RED)
     else:  # gta — GTA VI launch: the shop, the controller, midnight.
         cv.rect(x, y, x + w, y + h, fill=(27, 67, 72))
         cv.rect(x + 75, y + 18, x + 181, y + 50, fill=(208, 199, 165))
@@ -1602,15 +1711,15 @@ def front_page(style, heroes, grid, also, dots, dots_small, subhead,
     _footer(cv, ft_y)
     return cv
 
-# --- entry point: option 6A, Top-1 rebuild (33 stories) ------------------
+# --- entry point: option 7A, faithful top-1 rebuild (33 stories) ----------
 # Top-1 style DATE CHECK: explicit same-day statement + left-out items.
 DATE_CHECK = ("Every story here happened, or was first reported, on "
               "Thursday 19 November 2026. Left out as other days' news "
               "\u2014 18 Nov: EU's \u20ac45bn loan; Iranian drones over "
-              "Kuwait and Bahrain; Voyager 1 crossed one light-day. "
-              "20 Nov: COP31 closes; Cyclone Akvan's landfall.")
+              "Kuwait and Bahrain; first COP31 draft. 20 Nov: COP31 "
+              "closes; Cyclone Akvan's landfall.")
 
-HERO_V6 = [
+HERO_V7 = [
     ("SHENZHEN  \u2022  SUMMIT", "asia", "summit19",
      "Trump, Xi and Putin hold first three-way summit",
      "The three leaders meet at Kylin Villa in Shenzhen; no concrete "
@@ -1625,106 +1734,105 @@ HERO_V6 = [
      "The slimmer draft has no fossil-fuel exit and no $120bn adaptation "
      "goal. Talks are due to end on Friday. \u2014 Reuters \u00b7 AFP"),
 ]
-GRID_V6 = [
+GRID_V7 = [
     ("CRIMEA  \u2022  WAR", "europe", "kerch",
      "Ukraine hits Crimea bridge again",
-     "Third strike in a week halts trains to Russia. \u2014 Euromaidan"),
+     "Third strike in a week halts trains to Russia. \u2014 Euronews"),
     ("RIYADH  \u2022  WAR", "middle_east", "pif19",
      "Missile hits Riyadh PIF Tower",
      "Windows blown out on 7-8 floors; no one hurt. \u2014 Reuters"),
     ("ODISHA  \u2022  STORM", "asia", "bengal",
      "Cyclone Akvan nears India's coast",
      "Landfall due Friday noon; seven districts on alert. \u2014 IMD"),
+    ("SEOUL  \u2022  JUSTICE", "asia", "seoul",
+     "Top court overturns Han's sentence",
+     "The 15-year term is quashed; case sent back for retrial. "
+     "\u2014 Reuters"),
     ("GREENLAND  \u2022  SECURITY", "europe", "greenland",
      "Denmark backs Arctic pact with US",
      "Parliament backs the deal 109-0. \u2014 Reuters"),
-    ("KYIV  \u2022  WAR", "europe", "pylon",
-     "Kyiv drone raid hits cathedral",
-     "One killed, five hurt; two embassies hit. \u2014 AFP"),
     ("NEW YORK  \u2022  MARKETS", "global", "ant19",
      "Anthropic starts trading on Nasdaq",
      "Its record $81bn share sale was priced at $83. \u2014 AP"),
     ("WORLDWIDE  \u2022  GAMES", "global", "gta",
      "GTA VI goes on sale after 13 years",
      "The midnight launch draws rave reviews. \u2014 ABC"),
-    ("DHAKA  \u2022  POLITICS", "asia", "bangla19",
-     "Bangladesh shuts down",
-     "Lockdown called; two killed, Yunus home torched. \u2014 Reuters"),
-    ("GAZA  \u2022  WAR", "middle_east", "gaza19",
-     "Israel ends Gaza tank raid",
-     "Truce frays as Board of Peace warns it may collapse. "
-     "\u2014 Reuters"),
-    ("WASHINGTON  \u2022  ECONOMY", "americas", "fed19",
-     "Fed: December hike likely",
-     "Markets price a rise at about 95%. \u2014 Reuters"),
+    ("BOGOTA  \u2022  LABOUR", "americas", "bogota",
+     "Colombia's unions hold national strike",
+     "Marches in three cities against an economic law. \u2014 Infobae"),
+    ("NAIROBI  \u2022  SPORT", "africa", "nairobi",
+     "Marathon champion banned for doping",
+     "Kenya's Peres Jepchirchir gets three years. \u2014 ABC"),
+    ("CANBERRA  \u2022  ECONOMY", "oceania", "australia",
+     "Australia's jobless rate hits 4.9%",
+     "Highest since 2021; shares and the dollar slide. \u2014 ABC"),
 ]
-ALSO_V6 = [
-    "Berlin: Europe rallies for Ukraine in Berlin",
+ALSO_V7 = [
+    "Shenzhen: Xi urges ban on all nuclear arms",
+    "APEC: Albanese to Putin: \"End your war, end it now\"",
+    "Seoul: Half a million sit college entrance exam",
+    "Jakarta: Asset-seizure law passes after 18 years",
+    "Hormuz: tanker hit near the strait",
+    "Gaza: Israel ends tank raid past truce line",
     "The Hague: Dutch summon envoy over Kyiv blast",
+    "Brussels: EU delays methane rules two years",
+    "UK: Inquiry: yacht Bayesian was vulnerable to wind",
+    "Zurich: Two rivals to challenge FIFA's Infantino",
+    "Rome: Author Corrado Augias dies at 91",
     "Mogadishu: Somalia expels UAE ambassador",
     "Dakar: dozens missing as boat sinks off Senegal",
-    "Khartoum: court sentences Hemedti to death",
-    "Pretoria: central bank holds rate at 7.25%",
-    "Washington: Senate blocks Iran war-powers bid 48-51",
+    "Pretoria: Central bank holds rate at 7.25%",
     "Caracas: US, Venezuela sign military deal",
-    "Brasilia: central bank sells $1bn as real slides",
-    "Manila: Trump unveils $17bn Asia deals",
-    "Manila: Philippines, Japan plan oil stockpile",
-    "Manila: Modi visits Sikh temple in Manila",
-    "Jakarta: asset forfeiture bill passes into law",
-    "Washington: Trump waves off Huang spy claims",
-    "Markets: stocks slide on Fed, war fears",
-    "India: Nicholls ton rescues New Zealand",
-    "Hormuz: tanker hit near the strait",
-    "Washington: Trump weighs new Iran strikes",
-    "Badme: Ethiopia, Eritrea mass troops",
+    "Florida: Floods shut Broward, Miami schools again",
+    "Wellington: Court: pay equity cuts broke rights law",
+    "Tonga: Drought emergency takes effect",
+    "Cook Islands: Cyclone Xavier weakens to category 4",
     "Voyager: Voyager 1, one light-day away",
 ]
-ALSO_SRC_V6 = {
-    14: "AFP", 15: "Reuters", 16: "Reuters", 17: "Reuters",
-    18: "Africanews", 19: "SARB", 20: "USA Today", 21: "CNN",
-    22: "Reuters", 23: "Reuters", 24: "Rigzone",
-    25: "Morning Post", 26: "Digest", 27: "Reuters", 28: "Reuters",
-    29: "cricket.com.au", 30: "UKMTO", 31: "Bloomberg",
-    32: "Reuters", 33: "Reuters",
+ALSO_SRC_V7 = {
+    14: "Al Jazeera", 15: "ABC", 16: "Sedaily", 17: "Kompas",
+    18: "UKMTO", 19: "BBC", 20: "Reuters", 21: "Euronews",
+    22: "RNZ", 23: "ABC", 24: "Euronews", 25: "Al Jazeera",
+    26: "Reuters", 27: "SABC", 28: "CNN", 29: "CBS",
+    30: "RNZ", 31: "RNZ", 32: "RNZ", 33: "Reuters",
 }
-REGION_BAR_V6 = [
+REGION_BAR_V7 = [
     ("ASIA", 8, (200, 160, 0), (0, 0, 0)),
-    ("MIDDLE EAST", 4, (178, 34, 34), (255, 255, 255)),
-    ("EUROPE", 5, (30, 90, 180), (255, 255, 255)),
-    ("AFRICA", 5, (150, 90, 30), (255, 255, 255)),
-    ("AMERICAS", 5, (34, 139, 34), (255, 255, 255)),
-    ("OCEANIA", 1, (0, 140, 140), (255, 255, 255)),
-    ("GLOBAL", 5, (120, 60, 160), (255, 255, 255)),
+    ("MIDDLE EAST", 3, (178, 34, 34), (255, 255, 255)),
+    ("EUROPE", 7, (30, 90, 180), (255, 255, 255)),
+    ("AFRICA", 4, (150, 90, 30), (255, 255, 255)),
+    ("AMERICAS", 3, (34, 139, 34), (255, 255, 255)),
+    ("OCEANIA", 4, (0, 140, 140), (255, 255, 255)),
+    ("GLOBAL", 4, (120, 60, 160), (255, 255, 255)),
 ]
-DOTS_V6 = {
+DOTS_V7 = {
     1: (400, 75), 2: (215, 45), 3: (285, 68), 4: (285, 58),
-    5: (295, 90), 6: (368, 100), 7: (178, 16), 8: (265, 50),
-    9: (60, 85), 10: (445, 165), 11: (365, 82), 12: (300, 98),
-    13: (70, 70),
+    5: (295, 90), 6: (368, 100), 7: (178, 16), 8: (415, 68),
+    9: (60, 85), 10: (445, 165), 11: (102, 102), 12: (270, 115),
+    13: (405, 155),
 }
-DOTS_SMALL_V6 = {
-    14: (240, 48, "europe"), 15: (224, 56, "europe"),
-    16: (305, 125, "africa"), 17: (218, 108, "africa"),
-    18: (262, 120, "africa"), 19: (252, 140, "africa"),
-    20: (55, 95, "americas"), 21: (105, 105, "americas"),
-    22: (100, 95, "americas"), 23: (390, 86, "asia"),
-    24: (392, 106, "asia"), 25: (385, 75, "asia"),
-    26: (410, 110, "asia"), 27: (75, 55, "americas"),
-    28: (230, 45, "europe"), 29: (375, 88, "asia"),
-    30: (315, 108, "middle_east"), 31: (325, 85, "middle_east"),
-    32: (258, 105, "africa"), 33: (30, 150, "global"),
+DOTS_SMALL_V7 = {
+    14: (395, 80, "asia"), 15: (400, 72, "asia"),
+    16: (420, 75, "asia"), 17: (392, 112, "asia"),
+    18: (315, 95, "middle_east"), 19: (288, 82, "middle_east"),
+    20: (224, 56, "europe"), 21: (220, 62, "europe"),
+    22: (212, 50, "europe"), 23: (230, 62, "europe"),
+    24: (240, 68, "europe"), 25: (285, 125, "africa"),
+    26: (205, 105, "africa"), 27: (252, 140, "africa"),
+    28: (100, 95, "americas"), 29: (65, 80, "americas"),
+    30: (445, 170, "oceania"), 31: (440, 150, "oceania"),
+    32: (435, 160, "oceania"), 33: (30, 150, "global"),
 }
 
 init_fonts(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                        "fonts.bin"))
 cv = front_page(
-    "classic", HERO_V6, GRID_V6, ALSO_V6, DOTS_V6, DOTS_SMALL_V6,
+    "classic", HERO_V7, GRID_V7, ALSO_V7, DOTS_V7, DOTS_SMALL_V7,
     "Trump, Xi and Putin share one table \u00b7 The World Court finds "
     "genocide in Myanmar \u00b7 COP31's draft drops fossil fuels",
     "THE WORLD IN ONE DAY",
     "33 STORIES  \u2022  EVERY CONTINENT  \u2022  ALL FROM THIS ONE DAY",
     "Thursday 19 November 2026",
     "ALSO ON THURSDAY 19 NOVEMBER 2026",
-    REGION_BAR_V6, sources=ALSO_SRC_V6, also_cols=2)
+    REGION_BAR_V7, sources=ALSO_SRC_V7, also_cols=2)
 save(cv, "entry.png")
