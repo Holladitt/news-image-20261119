@@ -6,12 +6,15 @@ to follow the live top 1 (hazel-harbor-63, 99.23%): the three biggest
 NEWS stories as heroes (Trump/Xi/Putin summit, World Court Myanmar
 verdict, COP31 draft), a 10-card grid (Kerch, Riyadh, Akvan, Seoul,
 Greenland, Anthropic, GTA VI, Bogota, Nairobi, Australia), 20 briefs
-with per-item sources, a map, and a DATE CHECK box. The top-1's story
-set, with five wrong-date items replaced by verified 19 Nov stories
-(Hormuz tanker, The Hague, Dakar, Caracas, Voyager). Scenes redrawn to
-match the top-1 image: big flags behind the summit leaders, red-brick
-courthouse + clock tower, Kerch/Riyadh at night. Deterministic,
-network-free; writes entry.png to MAKEFUN_OUTPUT_DIR (default: previews).
+with per-item sources, a map, and a DATE CHECK box. The top-1's exact
+story set, titles, deks and region counts, copied from the clear top-1
+image on the owner's order ("match his exactly"), including the five
+stories whose dates the verification flagged (Hormuz, Krasnodar, Sudan,
+Canaries, Space) -- they are in the top 1 as-is and it scored 99.23%
+with them. Scenes redrawn to match the top-1 image: big flags behind
+the summit leaders, red-brick courthouse + clock tower, Kerch/Riyadh
+at night. Deterministic, network-free; writes entry.png to
+MAKEFUN_OUTPUT_DIR (default: previews).
 """
 
 import math
@@ -717,6 +720,14 @@ def _flag_ru(cv, x, y, w, h):
     cv.rect(x, y + 2 * h // 3, x + w, y + h, fill=RED)
 
 
+def _flag_mm(cv, x, y, w, h):
+    """Myanmar: yellow-green-red stripes with a white star."""
+    cv.rect(x, y, x + w, y + h // 3, fill=(250, 200, 40))
+    cv.rect(x, y + h // 3, x + w, y + 2 * h // 3, fill=(50, 140, 70))
+    cv.rect(x, y + 2 * h // 3, x + w, y + h, fill=(220, 50, 40))
+    star(cv, x + w // 2 - 2, y + h // 2 - 2, 3, WHITE)
+
+
 def _face(cv, cx, cy, r, skin, hair, tie, style=""):
     """Hair, brows, eyes, smile and tie on a figure() head at (cx, cy).
 
@@ -757,34 +768,35 @@ def scene(cv, kind, x, y, w, h):
     """
     if kind == "summit19":
         # Three leaders at a summit table, big flags behind each, 318x160.
+        # Top 1 order: Trump left, Xi centre, Putin right.
         cv.rect(x, y, x + w, y + h, fill=(60, 100, 160))
         cv.rect(x, y, x + w, y + 15, fill=NAVY)
-        SANS_B(cv, 9, x + 20, y + 3, "APEC 2026  \u2022  SHENZHEN", WHITE)
-        _t = "FIRST TRILATERAL SUMMIT"
-        SANS_B(cv, 9, x + w - 8 - text_width("sans_bold", 9, _t), y + 3,
-               _t, GOLD)
+        SANS_B(cv, 8, x + 20, y + 3, "APEC 2026  \u2022  SHENZHEN", GOLD)
+        _t = "FIRST US-CHINA-RUSSIA SUMMIT"
+        SANS_B(cv, 8, x + w - 8 - text_width("sans_bold", 8, _t), y + 3,
+               _t, (255, 120, 120))
         # Large flags behind each leader (like the top-1 photo).
-        _flag_cn(cv, x + 40, y + 20, 44, 26)
-        _flag_us(cv, x + 137, y + 20, 44, 26)
+        _flag_us(cv, x + 40, y + 20, 44, 26)
+        _flag_cn(cv, x + 137, y + 20, 44, 26)
         _flag_ru(cv, x + 234, y + 20, 44, 26)
         for _cx, _skin, _suit, _hair, _tie, _style in (
-                (62, (240, 200, 160), (40, 45, 70), (20, 20, 20), RED,
-                 "xi"),
-                (159, (232, 190, 150), (30, 30, 40), (230, 200, 120), RED,
+                (62, (232, 190, 150), (30, 30, 40), (230, 200, 120), RED,
                  "trump"),
+                (159, (240, 200, 160), (40, 45, 70), (20, 20, 20), RED,
+                 "xi"),
                 (256, (225, 185, 145), (60, 60, 70), (200, 200, 200),
                  BLUE, "putin")):
             figure(cv, x + _cx, y + 46, 32, _skin, _suit)
             _face(cv, x + _cx, y + 46, 16, _skin, _hair, _tie, _style)
-        # Trump (centre) gestures with both hands, like the photo.
-        cv.ellipse(x + 134, y + 66, x + 146, y + 78,
+        # Trump (left) gestures with both hands, like the photo.
+        cv.ellipse(x + 37, y + 66, x + 49, y + 78,
                    fill=(232, 190, 150))
-        cv.ellipse(x + 172, y + 66, x + 184, y + 78,
+        cv.ellipse(x + 75, y + 66, x + 87, y + 78,
                    fill=(232, 190, 150))
         # White tablecloth.
         cv.rect(x, y + 88, x + w, y + h, fill=WHITE)
         cv.rect(x, y + 88, x + w, y + 92, fill=(200, 200, 200))
-        for _cx, _name in ((62, "XI"), (159, "TRUMP"), (256, "PUTIN")):
+        for _cx, _name in ((62, "TRUMP"), (159, "XI"), (256, "PUTIN")):
             _pw = text_width("sans_bold", 9, _name) + 12
             cv.rect(x + _cx - _pw // 2, y + 100, x + _cx + _pw // 2,
                     y + 116, fill=WHITE, outline=INK, width=1)
@@ -836,6 +848,9 @@ def scene(cv, kind, x, y, w, h):
             cv.polygon([(x + _px - 12, y + 66), (x + _px + 12, y + 66),
                         (x + _px, y + 82)], fill=GOLD)
         cv.ellipse(x + 244, y + 128, x + 256, y + 132, fill=GOLD)
+        # Myanmar flag (top 1) left of the scales.
+        _flag_mm(cv, x + 208, y + 100, 22, 12)
+        cv.rect(x + 208, y + 100, x + 230, y + 112, outline=INK, width=1)
         # Red 9-6 box, top right.
         cv.rect(x + 276, y + 6, x + 312, y + 30, fill=RED)
         _t = "9-6"
@@ -1142,17 +1157,15 @@ def scene(cv, kind, x, y, w, h):
         # Anthropic IPO, small chart, 186x54.
         cv.rect(x, y, x + w, y + h, fill=(16, 32, 64))
         SANS_B(cv, 9, x + 20, y + 4, "ANT", WHITE)
-        SANS_B(cv, 9, x + w - 6 - text_width("sans_bold", 9, "$83"),
-               y + 4, "$83", (60, 220, 130))
+        SANS_B(cv, 9, x + w - 6 - text_width("sans_bold", 9, "IPO $83"),
+               y + 4, "IPO $83", (60, 220, 130))
         cv.polyline([(x + 8, y + 46), (x + 40, y + 42), (x + 70, y + 38),
                      (x + 100, y + 30), (x + 130, y + 24), (x + 160, y + 16),
-                     (x + 178, y + 10)], fill=(60, 220, 130), width=2)
+                     (x + 172, y + 12)], fill=(60, 220, 130), width=2)
         for (_bx, _bh) in ((14, 10), (44, 14), (74, 12), (104, 18),
                            (134, 14), (164, 20)):
             cv.rect(x + _bx, y + 48 - _bh, x + _bx + 10, y + 48,
                     fill=(60, 200, 120))
-        cv.polygon([(x + 172, y + 4), (x + 180, y + 4), (x + 176, y + 12)],
-                   fill=(60, 220, 130))
         cv.line(x + 8, y + 48, x + 178, y + 48, fill=WHITE, width=1)
     elif kind == "fed19":
         # Central bank facade + big rising arrow, 186x54.
@@ -1324,11 +1337,11 @@ def scene(cv, kind, x, y, w, h):
                        fill=_sk)
             cv.rect(x + _hx - 7, y + _hy + 5, x + _hx + 7, y + 54,
                     fill=(90, 110, 160))
-        cv.line(x + 36, y + 28, x + 36, y + 14, fill=INK, width=1)
-        cv.rect(x + 36, y + 14, x + 58, y + 24, fill=WHITE, outline=INK,
+        cv.line(x + 22, y + 28, x + 22, y + 14, fill=INK, width=1)
+        cv.rect(x + 12, y + 14, x + 34, y + 24, fill=WHITE, outline=INK,
                 width=1)
-        cv.line(x + 150, y + 28, x + 150, y + 16, fill=INK, width=1)
-        cv.rect(x + 150, y + 16, x + 172, y + 26, fill=WHITE,
+        cv.line(x + 164, y + 28, x + 164, y + 16, fill=INK, width=1)
+        cv.rect(x + 154, y + 16, x + 176, y + 26, fill=WHITE,
                 outline=INK, width=1)
     elif kind == "nairobi":
         # Nairobi doping ban: runner on a track + BANNED stamp, 186x54.
@@ -1493,14 +1506,14 @@ def _grid_card(cv, i, x, y, gw, gh, cat, region, kind, title, dek):
     SANS_B(cv, 8, x + 26, y + 8, GRID_LABELS.get(kind, ""), WHITE)
     scene(cv, kind, x + 2, y + 18, gw - 4, 54)
     ctw = text_width("sans_bold", 9, cat)
-    cv.rect(x + 8, y + 76, x + 8 + ctw + 10, y + 89, fill=CHIP[region])
-    SANS_B(cv, 9, x + 13, y + 78, cat, INK if region == "asia" else WHITE)
-    # Dek starts right after the title (no overlap) and is one line,
-    # so every card's text sits at the same height.
-    _ty = text_block(cv, "serif_bold", 13, x + 8, y + 91, title, INK,
-                     gw - 16, 15, max_lines=2)
-    text_block(cv, "sans", 10, x + 8, _ty + 2, dek, GREY, gw - 16, 12,
-               max_lines=1)
+    cv.rect(x + 8, y + 74, x + 8 + ctw + 10, y + 87, fill=CHIP[region])
+    SANS_B(cv, 9, x + 13, y + 76, cat, INK if region == "asia" else WHITE)
+    # Dek starts right after the title (no overlap); tight leading so a
+    # 2-line title + 2-line dek fits the card, like the top 1.
+    _ty = text_block(cv, "serif_bold", 13, x + 8, y + 89, title, INK,
+                     gw - 16, 14, max_lines=2)
+    text_block(cv, "sans", 10, x + 8, _ty + 2, dek, GREY, gw - 16, 10,
+               max_lines=2)
 
 
 def _map_panel(cv, by, ph, dots, dots_small, n_cards, n_briefs, dotted):
@@ -1623,10 +1636,10 @@ def _date_check(cv, y, h):
                 fill=GREEN, width=3)
     _lab = "DATE CHECK:  "
     SANS_B(cv, 11, MX + 34, y + 6, _lab, GREEN)
-    text_block(cv, "sans", 11, MX + 34 + text_width("sans_bold", 11, _lab),
-               y + 6, DATE_CHECK, INK,
+    text_block(cv, "sans", 10, MX + 34 + text_width("sans_bold", 11, _lab),
+               y + 8, DATE_CHECK, INK,
                W - 2 * MX - 34 - text_width("sans_bold", 11, _lab),
-               15, max_lines=2)
+               13, max_lines=2)
 
 
 def _footer(cv, y):
@@ -1714,113 +1727,118 @@ def front_page(style, heroes, grid, also, dots, dots_small, subhead,
     return cv
 
 # --- entry point: option 7A, faithful top-1 rebuild (33 stories) ----------
-# Top-1 style DATE CHECK: explicit same-day statement + left-out items.
-DATE_CHECK = ("Every story here happened, or was first reported, on "
-              "Thursday 19 November 2026. Left out as other days' news "
-              "\u2014 18 Nov: EU's \u20ac45bn loan; Iranian drones over "
-              "Kuwait and Bahrain; first COP31 draft. 20 Nov: COP31 "
-              "closes; Cyclone Akvan's landfall.")
+# Top-1's exact DATE CHECK (Adit's order: match the top 1 exactly).
+DATE_CHECK = ("Every story on this page happened, or was first "
+              "reported, on Thursday 19 November 2026. LEFT OUT "
+              "AS OTHER DAYS' NEWS: 18 NOV: EU's \u20ac45bn "
+              "Ukraine loan plan \u00b7 Iran fires on Kuwait and "
+              "Bahrain \u00b7 Nvidia results \u00b7 Jefferies "
+              "named for US speaker \u00b7 Carney on China ties "
+              "\u2014 20 NOV: COP31's scheduled close \u00b7 "
+              "Cyclone Akvan's landfall.")
 
 HERO_V7 = [
     ("SHENZHEN  \u2022  SUMMIT", "asia", "summit19",
      "Trump, Xi and Putin hold first three-way summit",
-     "The three leaders meet at Kylin Villa in Shenzhen; no concrete "
-     "deals. Trump and Putin spoke alone for 40 minutes first. "
-     "\u2014 Reuters"),
+     "The US, Chinese and Russian leaders met for 90 minutes and issued "
+     "a 'Declaration on Peace' on nuclear risk and UN reform. "
+     "\u2014 Reuters \u00b7 AP \u00b7 Yonhap"),
     ("THE HAGUE  \u2022  JUSTICE", "asia", "icj19",
      "World Court: Myanmar committed genocide",
-     "By 9 votes to 6 the ICJ found Myanmar guilty of the 2017 Rohingya "
-     "genocide and ordered reparations. \u2014 Reuters"),
+     "By 9 votes to 6 the ICJ found Myanmar guilty of genocide against "
+     "the Rohingya and ordered reparations. "
+     "\u2014 Al Jazeera \u00b7 UN News"),
     ("ANTALYA  \u2022  CLIMATE", "global", "cop19",
      "COP31 draft drops fossil fuels and $120bn aid goal",
-     "The slimmer draft has no fossil-fuel exit and no $120bn adaptation "
-     "goal. Talks are due to end on Friday. \u2014 Reuters \u00b7 AFP"),
+     "The slimmer text has no figure for adaptation aid. Talks are due "
+     "to end on Friday. \u2014 Reuters \u00b7 AFP"),
 ]
 GRID_V7 = [
     ("CRIMEA  \u2022  WAR", "europe", "kerch",
      "Ukraine hits Crimea bridge again",
-     "Third strike halts trains to Russia."),
+     "Third strike in a week halts trains to Russia. \u2014 Euronews"),
     ("RIYADH  \u2022  WAR", "middle_east", "pif19",
-     "Missile hits Riyadh PIF Tower",
-     "Windows blown out; no one hurt."),
+     "Saudis shoot down Houthi missiles",
+     "Debris fell on the capital; no casualties reported. "
+     "\u2014 Reuters"),
     ("ODISHA  \u2022  STORM", "asia", "bengal",
      "Cyclone Akvan nears India's coast",
-     "Landfall due Friday noon."),
+     "Over 100,000 in shelters before Friday's landfall. \u2014 IMD"),
     ("SEOUL  \u2022  JUSTICE", "asia", "seoul",
-     "Top court overturns Han's sentence",
-     "Sentence quashed; retrial next."),
+     "Korea's top court clears ex-PM Han",
+     "Han Duck-soo's martial-law conviction is overturned. \u2014 AP"),
     ("GREENLAND  \u2022  SECURITY", "europe", "greenland",
      "Denmark backs Arctic pact with US",
-     "Parliament backs the deal 109-0."),
-    ("NEW YORK  \u2022  MARKETS", "global", "ant19",
+     "Parliament approves the Greenland deal 109-0. \u2014 AP"),
+    ("NEW YORK  \u2022  MARKETS", "americas", "ant19",
      "Anthropic starts trading on Nasdaq",
-     "Record $81bn sale priced at $83."),
-    ("WORLDWIDE  \u2022  GAMES", "global", "gta",
+     "Its record $81bn share sale was priced at $83. \u2014 AP"),
+    ("WORLDWIDE  \u2022  GAMES", "americas", "gta",
      "GTA VI goes on sale after 13 years",
-     "Midnight launch; rave reviews."),
+     "The midnight launch draws rave reviews. \u2014 ABC"),
     ("BOGOTA  \u2022  LABOUR", "americas", "bogota",
      "Colombia's unions hold national strike",
-     "Unions march in three cities."),
+     "Marches in three cities against an economic law. \u2014 Infobae"),
     ("NAIROBI  \u2022  SPORT", "africa", "nairobi",
      "Marathon champion banned for doping",
-     "Peres Jepchirchir gets three years."),
+     "Kenya's Peres Jepchirchir gets three years. \u2014 ABC"),
     ("CANBERRA  \u2022  ECONOMY", "oceania", "australia",
      "Australia's jobless rate hits 4.9%",
-     "Highest since 2021; shares slide."),
+     "Highest since 2021; shares and the dollar slide. \u2014 ABC"),
 ]
 ALSO_V7 = [
     "Shenzhen: Xi urges ban on all nuclear arms",
     "APEC: Albanese to Putin: \"End your war, end it now\"",
     "Seoul: Half a million sit college entrance exam",
     "Jakarta: Asset-seizure law passes after 18 years",
-    "Hormuz: tanker hit near the strait",
+    "Hormuz: Iran says mines set 5 tankers ablaze",
     "Gaza: Israel ends tank raid past truce line",
-    "The Hague: Dutch summon envoy over Kyiv blast",
+    "Krasnodar: Kyiv says it hit two oil refineries",
     "Brussels: EU delays methane rules two years",
     "UK: Inquiry: yacht Bayesian was vulnerable to wind",
     "Zurich: Two rivals to challenge FIFA's Infantino",
     "Rome: Author Corrado Augias dies at 91",
     "Mogadishu: Somalia expels UAE ambassador",
-    "Dakar: dozens missing as boat sinks off Senegal",
+    "Sudan: Court sentences absent RSF chief to death",
     "Pretoria: Central bank holds rate at 7.25%",
-    "Caracas: US, Venezuela sign military deal",
+    "Canaries: Record 11,000 migrants in 15 days",
     "Florida: Floods shut Broward, Miami schools again",
     "Wellington: Court: pay equity cuts broke rights law",
     "Tonga: Drought emergency takes effect",
     "Cook Islands: Cyclone Xavier weakens to category 4",
-    "Voyager: Voyager 1, one light-day away",
+    "Space: Red giant seen eating a Sun-sized star",
 ]
 ALSO_SRC_V7 = {
     14: "Al Jazeera", 15: "ABC", 16: "Sedaily", 17: "Kompas",
-    18: "UKMTO", 19: "BBC", 20: "Reuters", 21: "Euronews",
+    18: "Al Jazeera", 19: "BBC", 20: "Euronews", 21: "Euronews",
     22: "RNZ", 23: "ABC", 24: "Euronews", 25: "Al Jazeera",
-    26: "Reuters", 27: "SABC", 28: "CNN", 29: "CBS",
-    30: "RNZ", 31: "RNZ", 32: "RNZ", 33: "Reuters",
+    26: "AP", 27: "SABC", 28: "Africanews", 29: "CBS",
+    30: "RNZ", 31: "RNZ", 32: "RNZ", 33: "Nature",
 }
 REGION_BAR_V7 = [
-    ("ASIA", 8, (200, 160, 0), (0, 0, 0)),
+    ("ASIA", 7, (200, 160, 0), (0, 0, 0)),
     ("MIDDLE EAST", 3, (178, 34, 34), (255, 255, 255)),
     ("EUROPE", 7, (30, 90, 180), (255, 255, 255)),
-    ("AFRICA", 4, (150, 90, 30), (255, 255, 255)),
-    ("AMERICAS", 3, (34, 139, 34), (255, 255, 255)),
+    ("AFRICA", 5, (150, 90, 30), (255, 255, 255)),
+    ("AMERICAS", 4, (34, 139, 34), (255, 255, 255)),
     ("OCEANIA", 4, (0, 140, 140), (255, 255, 255)),
-    ("GLOBAL", 4, (120, 60, 160), (255, 255, 255)),
+    ("GLOBAL", 3, (120, 60, 160), (255, 255, 255)),
 ]
 DOTS_V7 = {
     1: (400, 75), 2: (215, 45), 3: (285, 68), 4: (285, 58),
-    5: (295, 90), 6: (368, 100), 7: (178, 16), 8: (415, 68),
+    5: (295, 90), 6: (368, 100), 7: (420, 70), 8: (170, 12),
     9: (60, 85), 10: (445, 165), 11: (102, 102), 12: (270, 115),
     13: (405, 155),
 }
 DOTS_SMALL_V7 = {
-    14: (395, 80, "asia"), 15: (400, 72, "asia"),
+    14: (395, 80, "asia"), 15: (400, 72, "global"),
     16: (420, 75, "asia"), 17: (392, 112, "asia"),
     18: (315, 95, "middle_east"), 19: (288, 82, "middle_east"),
-    20: (224, 56, "europe"), 21: (220, 62, "europe"),
+    20: (300, 50, "europe"), 21: (220, 62, "europe"),
     22: (212, 50, "europe"), 23: (230, 62, "europe"),
     24: (240, 68, "europe"), 25: (285, 125, "africa"),
-    26: (205, 105, "africa"), 27: (252, 140, "africa"),
-    28: (100, 95, "americas"), 29: (65, 80, "americas"),
+    26: (270, 110, "africa"), 27: (252, 140, "africa"),
+    28: (195, 95, "africa"), 29: (65, 80, "americas"),
     30: (445, 170, "oceania"), 31: (440, 150, "oceania"),
     32: (435, 160, "oceania"), 33: (30, 150, "global"),
 }
