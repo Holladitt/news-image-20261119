@@ -1,12 +1,13 @@
-"""news-image-20261119 entry: option 5A, Front Page Classic (42 stories).
+"""news-image-20261119 entry: option 6A, Top-1 rebuild (33 stories).
 
 Single self-contained program (stdlib only). Renders one 1024x1024
-front page summing up Thursday 19 November 2026's world news:
-Trump, Xi and Putin's first three-way summit; Anthropic's record
-Nasdaq IPO; GTA VI's release; the World Court's Myanmar genocide
-verdict; COP31's draft; and 29 more briefs. All 42 stories verified
-against primary sources. Deterministic, network-free; writes
-entry.png to MAKEFUN_OUTPUT_DIR (default: previews).
+front page summing up Thursday 19 November 2026's world news, rebuilt
+to follow the live top 1's formula: the three biggest NEWS stories as
+heroes (Trump/Xi/Putin summit, World Court Myanmar verdict, COP31
+draft), Anthropic and GTA VI as grid cards, Kerch Bridge and Greenland
+as grid cards, 20 briefs with per-item sources, a map, and a DATE CHECK
+box. All 33 stories verified against primary sources. Deterministic,
+network-free; writes entry.png to MAKEFUN_OUTPUT_DIR (default: previews).
 """
 
 import math
@@ -507,6 +508,8 @@ HERO_STATUS = {
     "summit19": ("REPORTED", (34, 139, 34)),
     "ant19hero": ("REPORTED", (34, 139, 34)),
     "gta19": ("REPORTED", (34, 139, 34)),
+    "icj19": ("REPORTED", (34, 139, 34)),
+    "cop19": ("REPORTED", (34, 139, 34)),
 }
 
 # --- stories: (cat label, region, scene kind, headline, dek) ------------
@@ -632,7 +635,9 @@ GRID_LABELS = {
     "pif19": "OVER RIYADH", "pylon": "KYIV", "gaza19": "GAZA",
     "bangla19": "DHAKA", "ethiopia": "BADME",
     "bengal": "ODISHA", "fed19": "WASHINGTON",
-    "space": "16BN MILES",
+    "space": "16BN MILES", "kerch": "KERCH BRIDGE",
+    "greenland": "GREENLAND", "ant19": "ANT NASDAQ",
+    "gta": "GTA VI",
 }
 
 CONTINENTS = [
@@ -1208,6 +1213,56 @@ def scene(cv, kind, x, y, w, h):
         cv.line(x + 119, y + 23, x + 130, y + 11, fill=(154, 166, 176),
                 width=1)
         cv.ellipse(x + 128, y + 8, x + 132, y + 13, fill=(219, 187, 83))
+    elif kind == "kerch":
+        # Kerch Bridge, icon style: deck, arch span, blast, 186x54.
+        cv.rect(x, y, x + w, y + h, fill=(175, 210, 238))
+        cv.ellipse(x + 12, y + 4, x + 24, y + 16, fill=(255, 220, 100))
+        cv.rect(x, y + 40, x + w, y + h, fill=(90, 140, 180))
+        cv.rect(x, y + 28, x + w, y + 32, fill=(120, 125, 135))
+        for _px in (20, 70, 120, 165):
+            cv.rect(x + _px, y + 32, x + _px + 5, y + 42,
+                    fill=(100, 105, 115))
+        cv.polyline([(x + 60, y + 28), (x + 93, y + 8), (x + 126, y + 28)],
+                    fill=(140, 145, 155), width=3)
+        cv.line(x + 93, y + 8, x + 93, y + 28, fill=(140, 145, 155),
+                width=2)
+        cv.ellipse(x + 82, y + 10, x + 104, y + 28, fill=(255, 140, 40))
+        cv.ellipse(x + 87, y + 14, x + 99, y + 25, fill=(255, 220, 100))
+        cv.ellipse(x + 91, y + 17, x + 96, y + 22, fill=(255, 255, 255))
+        for (_sx0, _sy0, _sx1, _sy1) in ((104, 8, 112, 16),
+                                         (110, 4, 120, 12),
+                                         (116, 8, 124, 15)):
+            cv.ellipse(x + _sx0, y + _sy0, x + _sx1, y + _sy1,
+                       fill=(180, 180, 175))
+        cv.line(x + 8, y + 20, x + 78, y + 20, fill=(200, 200, 200),
+                width=1)
+    elif kind == "greenland":
+        # Greenland Arctic pact, icon style: peaks, DK/US flags, 186x54.
+        cv.rect(x, y, x + w, y + h, fill=(210, 228, 240))
+        cv.polygon([(x + 8, y + 54), (x + 50, y + 12), (x + 92, y + 54)],
+                   fill=(240, 244, 248))
+        cv.polygon([(x + 50, y + 12), (x + 66, y + 30), (x + 50, y + 30)],
+                   fill=(200, 210, 220))
+        cv.polygon([(x + 70, y + 54), (x + 118, y + 6), (x + 166, y + 54)],
+                   fill=(225, 232, 238))
+        cv.polygon([(x + 118, y + 6), (x + 136, y + 26), (x + 118, y + 26)],
+                   fill=(185, 198, 210))
+        cv.rect(x, y + 48, x + w, y + h, fill=(235, 242, 248))
+        cv.line(x + 30, y + 14, x + 30, y + 40, fill=INK, width=1)
+        cv.rect(x + 30, y + 14, x + 46, y + 24, fill=RED)
+        cv.rect(x + 36, y + 14, x + 39, y + 24, fill=WHITE)
+        cv.rect(x + 30, y + 18, x + 46, y + 20, fill=WHITE)
+        cv.line(x + 150, y + 14, x + 150, y + 40, fill=INK, width=1)
+        cv.rect(x + 150, y + 14, x + 166, y + 24, fill=WHITE,
+                outline=INK, width=1)
+        cv.rect(x + 150, y + 14, x + 158, y + 19, fill=NAVY)
+        for _fy in (20, 22):
+            cv.line(x + 150, y + _fy, x + 166, y + _fy, fill=RED, width=1)
+        cv.line(x + 159, y + 15, x + 166, y + 15, fill=RED, width=1)
+        cv.line(x + 159, y + 17, x + 166, y + 17, fill=RED, width=1)
+        cv.rect(x + 158, y + 2, x + 184, y + 16, fill=RED)
+        SANS_B(cv, 8, x + 171 - text_width("sans_bold", 8, "109-0") // 2,
+               y + 5, "109-0", WHITE)
     else:  # gta — GTA VI launch: the shop, the controller, midnight.
         cv.rect(x, y, x + w, y + h, fill=(27, 67, 72))
         cv.rect(x + 75, y + 18, x + 181, y + 50, fill=(208, 199, 165))
@@ -1465,15 +1520,15 @@ def _date_check(cv, y, h):
 
 def _footer(cv, y):
     SANS(cv, 10, MX, y,
-         "Every story here happened or was first reported on "
-         "Thursday, 19 November 2026. Contested claims are "
-         "attributed. Sources: Reuters, AP, AFP, Al Jazeera, "
-         "Bloomberg. Original drawings.", GREY)
+         "Claims are attributed, not stated as fact \u00b7 Pictures and "
+         "map: original, drawn in code \u00b7 Sources: Reuters, AP, AFP, "
+         "BBC, Al Jazeera, UN News, Euronews, ABC, RNZ, Xinhua, Nature "
+         "\u00b7 2026-11-19", GREY)
 
 
 def front_page(style, heroes, grid, also, dots, dots_small, subhead,
               kicker_l, kicker_r, title, also_title, region_bar,
-              sources=None):
+              sources=None, also_cols=3):
     cv = Canvas(W, H, PAPER)
     n_cards = len(heroes) + len(grid)
     n_briefs = len(also)
@@ -1539,22 +1594,137 @@ def front_page(style, heroes, grid, also, dots, dots_small, subhead,
                        gw, gh, cat, region, kind, t, dek)
     _map_panel(cv, map_y, map_h, dots, dots_small, n_cards, n_briefs,
                dotted=(style == "atlas"))
-    _also_panel(cv, map_y, map_h, also, also_title, 3, 156, 128, 8,
+    _also_panel(cv, map_y, map_h, also, also_title, also_cols,
+                (W - 2 * MX - 508 - 24) // also_cols,
+                (W - 2 * MX - 508 - 24) // also_cols - 28, 8,
                 9, n_cards + 1, sources=sources)
     _date_check(cv, dc_y, dc_h)
     _footer(cv, ft_y)
     return cv
 
-# --- entry point: option 5A, Front Page Classic (42 stories) ------------
+# --- entry point: option 6A, Top-1 rebuild (33 stories) ------------------
+# Top-1 style DATE CHECK: explicit same-day statement + left-out items.
+DATE_CHECK = ("Every story here happened, or was first reported, on "
+              "Thursday 19 November 2026. Left out as other days' news "
+              "\u2014 18 Nov: EU's \u20ac45bn loan; Iranian drones over "
+              "Kuwait and Bahrain; Voyager 1 crossed one light-day. "
+              "20 Nov: COP31 closes; Cyclone Akvan's landfall.")
+
+HERO_V6 = [
+    ("SHENZHEN  \u2022  SUMMIT", "asia", "summit19",
+     "Trump, Xi and Putin hold first three-way summit",
+     "The three leaders meet at Kylin Villa in Shenzhen; no concrete "
+     "deals. Trump and Putin spoke alone for 40 minutes first. "
+     "\u2014 Reuters"),
+    ("THE HAGUE  \u2022  JUSTICE", "asia", "icj19",
+     "World Court: Myanmar committed genocide",
+     "By 9 votes to 6 the ICJ found Myanmar guilty of the 2017 Rohingya "
+     "genocide and ordered reparations. \u2014 Reuters"),
+    ("ANTALYA  \u2022  CLIMATE", "global", "cop19",
+     "COP31 draft drops fossil fuels and $120bn aid goal",
+     "The slimmer draft has no fossil-fuel exit and no $120bn adaptation "
+     "goal. Talks are due to end on Friday. \u2014 Reuters \u00b7 AFP"),
+]
+GRID_V6 = [
+    ("CRIMEA  \u2022  WAR", "europe", "kerch",
+     "Ukraine hits Crimea bridge again",
+     "Third strike in a week halts trains to Russia. \u2014 Euromaidan"),
+    ("RIYADH  \u2022  WAR", "middle_east", "pif19",
+     "Missile hits Riyadh PIF Tower",
+     "Windows blown out on 7-8 floors; no one hurt. \u2014 Reuters"),
+    ("ODISHA  \u2022  STORM", "asia", "bengal",
+     "Cyclone Akvan nears India's coast",
+     "Landfall due Friday noon; seven districts on alert. \u2014 IMD"),
+    ("GREENLAND  \u2022  SECURITY", "europe", "greenland",
+     "Denmark backs Arctic pact with US",
+     "Parliament backs the deal 109-0. \u2014 Reuters"),
+    ("KYIV  \u2022  WAR", "europe", "pylon",
+     "Kyiv drone raid hits cathedral",
+     "One killed, five hurt; two embassies hit. \u2014 AFP"),
+    ("NEW YORK  \u2022  MARKETS", "global", "ant19",
+     "Anthropic starts trading on Nasdaq",
+     "Its record $81bn share sale was priced at $83. \u2014 AP"),
+    ("WORLDWIDE  \u2022  GAMES", "global", "gta",
+     "GTA VI goes on sale after 13 years",
+     "The midnight launch draws rave reviews. \u2014 ABC"),
+    ("DHAKA  \u2022  POLITICS", "asia", "bangla19",
+     "Bangladesh shuts down",
+     "Lockdown called; two killed, Yunus home torched. \u2014 Reuters"),
+    ("GAZA  \u2022  WAR", "middle_east", "gaza19",
+     "Israel ends Gaza tank raid",
+     "Truce frays as Board of Peace warns it may collapse. "
+     "\u2014 Reuters"),
+    ("WASHINGTON  \u2022  ECONOMY", "americas", "fed19",
+     "Fed: December hike likely",
+     "Markets price a rise at about 95%. \u2014 Reuters"),
+]
+ALSO_V6 = [
+    "Berlin: Europe rallies for Ukraine in Berlin",
+    "The Hague: Dutch summon envoy over Kyiv blast",
+    "Mogadishu: Somalia expels UAE ambassador",
+    "Dakar: dozens missing as boat sinks off Senegal",
+    "Khartoum: court sentences Hemedti to death",
+    "Pretoria: central bank holds rate at 7.25%",
+    "Washington: Senate blocks Iran war-powers bid 48-51",
+    "Caracas: US, Venezuela sign military deal",
+    "Brasilia: central bank sells $1bn as real slides",
+    "Manila: Trump unveils $17bn Asia deals",
+    "Manila: Philippines, Japan plan oil stockpile",
+    "Manila: Modi visits Sikh temple in Manila",
+    "Jakarta: asset forfeiture bill passes into law",
+    "Washington: Trump waves off Huang spy claims",
+    "Markets: stocks slide on Fed, war fears",
+    "India: Nicholls ton rescues New Zealand",
+    "Hormuz: tanker hit near the strait",
+    "Washington: Trump weighs new Iran strikes",
+    "Badme: Ethiopia, Eritrea mass troops",
+    "Voyager: Voyager 1, one light-day away",
+]
+ALSO_SRC_V6 = {
+    14: "AFP", 15: "Reuters", 16: "Reuters", 17: "Reuters",
+    18: "Africanews", 19: "SARB", 20: "USA Today", 21: "CNN",
+    22: "Reuters", 23: "Reuters", 24: "Rigzone",
+    25: "Morning Post", 26: "Digest", 27: "Reuters", 28: "Reuters",
+    29: "cricket.com.au", 30: "UKMTO", 31: "Bloomberg",
+    32: "Reuters", 33: "Reuters",
+}
+REGION_BAR_V6 = [
+    ("ASIA", 8, (200, 160, 0), (0, 0, 0)),
+    ("MIDDLE EAST", 4, (178, 34, 34), (255, 255, 255)),
+    ("EUROPE", 5, (30, 90, 180), (255, 255, 255)),
+    ("AFRICA", 5, (150, 90, 30), (255, 255, 255)),
+    ("AMERICAS", 5, (34, 139, 34), (255, 255, 255)),
+    ("OCEANIA", 1, (0, 140, 140), (255, 255, 255)),
+    ("GLOBAL", 5, (120, 60, 160), (255, 255, 255)),
+]
+DOTS_V6 = {
+    1: (400, 75), 2: (215, 45), 3: (285, 68), 4: (285, 58),
+    5: (295, 90), 6: (368, 100), 7: (178, 16), 8: (265, 50),
+    9: (60, 85), 10: (445, 165), 11: (365, 82), 12: (300, 98),
+    13: (70, 70),
+}
+DOTS_SMALL_V6 = {
+    14: (240, 48, "europe"), 15: (224, 56, "europe"),
+    16: (305, 125, "africa"), 17: (218, 108, "africa"),
+    18: (262, 120, "africa"), 19: (252, 140, "africa"),
+    20: (55, 95, "americas"), 21: (105, 105, "americas"),
+    22: (100, 95, "americas"), 23: (390, 86, "asia"),
+    24: (392, 106, "asia"), 25: (385, 75, "asia"),
+    26: (410, 110, "asia"), 27: (75, 55, "americas"),
+    28: (230, 45, "europe"), 29: (375, 88, "asia"),
+    30: (315, 108, "middle_east"), 31: (325, 85, "middle_east"),
+    32: (258, 105, "africa"), 33: (30, 150, "global"),
+}
+
 init_fonts(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                        "fonts.bin"))
 cv = front_page(
-    "classic", HERO_A, GRID_A, ALSO_A, DOTS_A, DOTS_SMALL_A,
-    "Trump, Xi and Putin share one table \u00b7 Anthropic's record IPO "
-    "\u00b7 GTA VI arrives after a 13-year wait",
+    "classic", HERO_V6, GRID_V6, ALSO_V6, DOTS_V6, DOTS_SMALL_V6,
+    "Trump, Xi and Putin share one table \u00b7 The World Court finds "
+    "genocide in Myanmar \u00b7 COP31's draft drops fossil fuels",
     "THE WORLD IN ONE DAY",
-    "42 STORIES  \u2022  EVERY CONTINENT  \u2022  ALL FROM THIS ONE DAY",
+    "33 STORIES  \u2022  EVERY CONTINENT  \u2022  ALL FROM THIS ONE DAY",
     "Thursday 19 November 2026",
     "ALSO ON THURSDAY 19 NOVEMBER 2026",
-    REGION_BAR)
+    REGION_BAR_V6, sources=ALSO_SRC_V6, also_cols=2)
 save(cv, "entry.png")
