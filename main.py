@@ -1495,10 +1495,12 @@ def _grid_card(cv, i, x, y, gw, gh, cat, region, kind, title, dek):
     ctw = text_width("sans_bold", 9, cat)
     cv.rect(x + 8, y + 76, x + 8 + ctw + 10, y + 89, fill=CHIP[region])
     SANS_B(cv, 9, x + 13, y + 78, cat, INK if region == "asia" else WHITE)
-    text_block(cv, "serif_bold", 13, x + 8, y + 91, title, INK,
-               gw - 16, 15, max_lines=2)
-    text_block(cv, "sans", 10, x + 8, y + 116, dek, GREY, gw - 16, 12,
-               max_lines=2)
+    # Dek starts right after the title (no overlap) and is one line,
+    # so every card's text sits at the same height.
+    _ty = text_block(cv, "serif_bold", 13, x + 8, y + 91, title, INK,
+                     gw - 16, 15, max_lines=2)
+    text_block(cv, "sans", 10, x + 8, _ty + 2, dek, GREY, gw - 16, 12,
+               max_lines=1)
 
 
 def _map_panel(cv, by, ph, dots, dots_small, n_cards, n_briefs, dotted):
@@ -1737,35 +1739,34 @@ HERO_V7 = [
 GRID_V7 = [
     ("CRIMEA  \u2022  WAR", "europe", "kerch",
      "Ukraine hits Crimea bridge again",
-     "Third strike in a week halts trains to Russia. \u2014 Euronews"),
+     "Third strike halts trains to Russia."),
     ("RIYADH  \u2022  WAR", "middle_east", "pif19",
      "Missile hits Riyadh PIF Tower",
-     "Windows blown out on 7-8 floors; no one hurt. \u2014 Reuters"),
+     "Windows blown out; no one hurt."),
     ("ODISHA  \u2022  STORM", "asia", "bengal",
      "Cyclone Akvan nears India's coast",
-     "Landfall due Friday noon; seven districts on alert. \u2014 IMD"),
+     "Landfall due Friday noon."),
     ("SEOUL  \u2022  JUSTICE", "asia", "seoul",
      "Top court overturns Han's sentence",
-     "The 15-year term is quashed; case sent back for retrial. "
-     "\u2014 Reuters"),
+     "Sentence quashed; retrial next."),
     ("GREENLAND  \u2022  SECURITY", "europe", "greenland",
      "Denmark backs Arctic pact with US",
-     "Parliament backs the deal 109-0. \u2014 Reuters"),
+     "Parliament backs the deal 109-0."),
     ("NEW YORK  \u2022  MARKETS", "global", "ant19",
      "Anthropic starts trading on Nasdaq",
-     "Its record $81bn share sale was priced at $83. \u2014 AP"),
+     "Record $81bn sale priced at $83."),
     ("WORLDWIDE  \u2022  GAMES", "global", "gta",
      "GTA VI goes on sale after 13 years",
-     "The midnight launch draws rave reviews. \u2014 ABC"),
+     "Midnight launch; rave reviews."),
     ("BOGOTA  \u2022  LABOUR", "americas", "bogota",
      "Colombia's unions hold national strike",
-     "Marches in three cities against an economic law. \u2014 Infobae"),
+     "Unions march in three cities."),
     ("NAIROBI  \u2022  SPORT", "africa", "nairobi",
      "Marathon champion banned for doping",
-     "Kenya's Peres Jepchirchir gets three years. \u2014 ABC"),
+     "Peres Jepchirchir gets three years."),
     ("CANBERRA  \u2022  ECONOMY", "oceania", "australia",
      "Australia's jobless rate hits 4.9%",
-     "Highest since 2021; shares and the dollar slide. \u2014 ABC"),
+     "Highest since 2021; shares slide."),
 ]
 ALSO_V7 = [
     "Shenzhen: Xi urges ban on all nuclear arms",
