@@ -769,12 +769,20 @@ def scene(cv, kind, x, y, w, h):
     if kind == "summit19":
         # Three leaders at a summit table, big flags behind each, 318x160.
         # Top 1 order: Trump left, Xi centre, Putin right.
-        cv.rect(x, y, x + w, y + h, fill=(60, 100, 160))
-        cv.rect(x, y, x + w, y + 15, fill=NAVY)
-        SANS_B(cv, 8, x + 20, y + 3, "APEC 2026  \u2022  SHENZHEN", GOLD)
+        # Top-1 look: GOLD top band, dark navy wall, flags on gold poles,
+        # name plates dark navy with white text ON the table.
+        cv.rect(x, y, x + w, y + h, fill=(34, 59, 100))
+        cv.rect(x, y, x + w, y + 15, fill=(222, 178, 80))
+        SANS_B(cv, 8, x + 20, y + 3, "APEC 2026  \u2022  SHENZHEN", INK)
         _t = "FIRST US-CHINA-RUSSIA SUMMIT"
         SANS_B(cv, 8, x + w - 8 - text_width("sans_bold", 8, _t), y + 3,
-               _t, (255, 120, 120))
+               _t, RED)
+        # Gold flag poles (drawn first, flags + figures cover the rest).
+        for _fx in (40, 137, 234):
+            cv.line(x + _fx - 1, y + 18, x + _fx - 1, y + 88,
+                    fill=GOLD, width=2)
+            cv.ellipse(x + _fx - 3, y + 15, x + _fx + 1, y + 19,
+                       fill=GOLD)
         # Large flags behind each leader (like the top-1 photo).
         _flag_us(cv, x + 40, y + 20, 44, 26)
         _flag_cn(cv, x + 137, y + 20, 44, 26)
@@ -793,64 +801,69 @@ def scene(cv, kind, x, y, w, h):
                    fill=(232, 190, 150))
         cv.ellipse(x + 75, y + 66, x + 87, y + 78,
                    fill=(232, 190, 150))
-        # White tablecloth.
+        # White tablecloth with a thin red top edge.
         cv.rect(x, y + 88, x + w, y + h, fill=WHITE)
-        cv.rect(x, y + 88, x + w, y + 92, fill=(200, 200, 200))
+        cv.rect(x, y + 88, x + w, y + 90, fill=RED)
+        # Small name-card tents on the table, one per leader.
+        for _cx in (62, 159, 256):
+            cv.rect(x + _cx - 10, y + 92, x + _cx + 10, y + 100,
+                    fill=WHITE, outline=(150, 148, 140), width=1)
+        # Name plates: dark navy with white text (top-1 style).
         for _cx, _name in ((62, "TRUMP"), (159, "XI"), (256, "PUTIN")):
             _pw = text_width("sans_bold", 9, _name) + 12
-            cv.rect(x + _cx - _pw // 2, y + 100, x + _cx + _pw // 2,
-                    y + 116, fill=WHITE, outline=INK, width=1)
+            cv.rect(x + _cx - _pw // 2, y + 104, x + _cx + _pw // 2,
+                    y + 120, fill=(38, 41, 48))
             SANS_B(cv, 9, x + _cx - text_width("sans_bold", 9, _name) // 2,
-                   y + 103, _name, INK)
-        # White flower bouquet on the table, centre (like the photo).
-        cv.rect(x + 152, y + 142, x + 166, y + 154, fill=(60, 120, 60))
-        for _fx, _fy in ((152, 132), (160, 128), (168, 132), (155, 138),
-                         (165, 138)):
-            cv.ellipse(x + _fx - 4, y + _fy - 4, x + _fx + 4, y + _fy + 4,
-                       fill=(255, 230, 230))
-        cv.ellipse(x + 157, y + 129, x + 163, y + 135,
-                   fill=(255, 240, 180))
+                   y + 107, _name, WHITE)
     elif kind == "icj19":
-        # World Court: red-brick courthouse + clock tower + scales, 318x160.
+        # World Court: red-brick courthouse, clock tower LEFT, slate roof,
+        # arched windows, scales right, grass strip, 318x160.
         cv.rect(x, y, x + w, y + h, fill=(232, 240, 244))
-        # Central clock tower (brick), rising behind the roofline.
-        cv.rect(x + 98, y + 26, x + 122, y + 72, fill=(165, 60, 50))
-        cv.polygon([(x + 98, y + 26), (x + 110, y + 14),
-                    (x + 122, y + 26)], fill=(140, 45, 40))
-        cv.ellipse(x + 102, y + 32, x + 118, y + 48, fill=WHITE)
-        cv.line(x + 110, y + 40, x + 110, y + 35, fill=INK, width=1)
-        cv.line(x + 110, y + 40, x + 115, y + 40, fill=INK, width=1)
-        # Brick facade with white columns.
-        cv.polygon([(x + 28, y + 72), (x + 105, y + 48), (x + 182, y + 72)],
-                   fill=(200, 90, 70))
-        cv.rect(x + 28, y + 72, x + 182, y + 140, fill=(175, 70, 55))
-        for _cx in (46, 76, 106, 136, 166):
-            cv.rect(x + _cx, y + 78, x + _cx + 8, y + 136, fill=WHITE)
-        cv.rect(x + 28, y + 136, x + 182, y + 140, fill=(140, 45, 40))
-        cv.rect(x + 20, y + 140, x + 190, y + 144, fill=(120, 40, 35))
-        cv.rect(x + 14, y + 144, x + 196, y + 148, fill=(100, 35, 30))
-        # Side towers (brick), like the top-1 courthouse.
-        for _tx in (10, 184):
-            cv.rect(x + _tx, y + 56, x + _tx + 16, y + 140,
-                    fill=(150, 55, 45))
-            cv.polygon([(x + _tx, y + 56), (x + _tx + 8, y + 44),
-                        (x + _tx + 16, y + 56)], fill=(125, 45, 38))
-            cv.rect(x + _tx + 5, y + 66, x + _tx + 11, y + 76,
-                    fill=(255, 220, 150))
-            cv.rect(x + _tx + 5, y + 84, x + _tx + 11, y + 94,
-                    fill=(255, 220, 150))
+        # Clock tower, left (brick), tall, dark slate pointed roof.
+        cv.rect(x + 10, y + 20, x + 36, y + 140, fill=(165, 60, 50))
+        cv.polygon([(x + 10, y + 20), (x + 23, y + 6),
+                    (x + 36, y + 20)], fill=(70, 90, 120))
+        cv.ellipse(x + 14, y + 30, x + 32, y + 48, fill=WHITE)
+        cv.line(x + 23, y + 39, x + 23, y + 34, fill=INK, width=1)
+        cv.line(x + 23, y + 39, x + 28, y + 39, fill=INK, width=1)
+        cv.rect(x + 18, y + 58, x + 28, y + 70, fill=(255, 220, 150))
+        cv.rect(x + 18, y + 78, x + 28, y + 90, fill=(255, 220, 150))
+        # Main facade (brick) with a dark slate roof band.
+        cv.rect(x + 36, y + 64, x + 200, y + 140, fill=(175, 70, 55))
+        cv.rect(x + 36, y + 52, x + 200, y + 64, fill=(70, 90, 120))
+        # Small rectangular windows above the arches.
+        for _cx in (52, 80, 108, 136, 164):
+            cv.rect(x + _cx, y + 72, x + _cx + 8, y + 84,
+                    fill=(255, 230, 170))
+        # Arched white windows along the facade (rect + half-ellipse top).
+        for _cx in (52, 80, 108, 136, 164):
+            cv.rect(x + _cx, y + 100, x + _cx + 8, y + 132, fill=WHITE)
+            cv.ellipse(x + _cx, y + 92, x + _cx + 8, y + 102,
+                       fill=WHITE)
+        # Right tower (brick), shorter, dark slate pointed roof.
+        cv.rect(x + 200, y + 76, x + 218, y + 140, fill=(150, 55, 45))
+        cv.polygon([(x + 200, y + 76), (x + 209, y + 62),
+                    (x + 218, y + 76)], fill=(70, 90, 120))
+        cv.rect(x + 205, y + 86, x + 213, y + 98, fill=(255, 220, 150))
         # Scales of justice, right.
-        cv.line(x + 250, y + 36, x + 250, y + 128, fill=GOLD, width=3)
-        cv.line(x + 222, y + 46, x + 278, y + 46, fill=GOLD, width=3)
-        cv.ellipse(x + 246, y + 32, x + 254, y + 40, fill=GOLD)
-        for _px in (222, 278):
+        cv.line(x + 252, y + 36, x + 252, y + 128, fill=GOLD, width=3)
+        cv.line(x + 224, y + 46, x + 280, y + 46, fill=GOLD, width=3)
+        cv.ellipse(x + 248, y + 32, x + 256, y + 40, fill=GOLD)
+        for _px in (224, 280):
             cv.line(x + _px, y + 46, x + _px, y + 66, fill=GOLD, width=1)
             cv.polygon([(x + _px - 12, y + 66), (x + _px + 12, y + 66),
                         (x + _px, y + 82)], fill=GOLD)
-        cv.ellipse(x + 244, y + 128, x + 256, y + 132, fill=GOLD)
-        # Myanmar flag (top 1) left of the scales.
-        _flag_mm(cv, x + 208, y + 100, 22, 12)
-        cv.rect(x + 208, y + 100, x + 230, y + 112, outline=INK, width=1)
+        cv.ellipse(x + 246, y + 128, x + 258, y + 132, fill=GOLD)
+        # Myanmar flag below the scales, left of the post.
+        _flag_mm(cv, x + 228, y + 102, 22, 12)
+        cv.rect(x + 228, y + 102, x + 250, y + 114, outline=INK, width=1)
+        # Red 9-6 box, top right.
+        cv.rect(x + 276, y + 6, x + 312, y + 30, fill=RED)
+        _t = "9-6"
+        SANS_B(cv, 16, x + 294 - text_width("sans_bold", 16, _t) // 2,
+               y + 10, _t, WHITE)
+        # Grass strip above the navy band.
+        cv.rect(x, y + 140, x + w, y + 148, fill=(87, 148, 104))
         # Red 9-6 box, top right.
         cv.rect(x + 276, y + 6, x + 312, y + 30, fill=RED)
         _t = "9-6"
@@ -862,41 +875,57 @@ def scene(cv, kind, x, y, w, h):
         SANS_B(cv, 9, x + (w - text_width("sans_bold", 9, _t2)) // 2,
                y + 151, _t2, WHITE)
     elif kind == "cop19":
-        # COP31: globe, crossed-out FOSSIL FUELS, CUT stamp, 318x160.
-        cv.rect(x, y, x + w, y + h, fill=(232, 240, 244))
+        # COP31: teal background, big globe + thermometer overlapping it,
+        # wide draft document, crossed-out FOSSIL FUELS + $120BN, CUT
+        # stamp bottom-right, navy band, 318x160.
+        cv.rect(x, y, x + w, y + h, fill=(58, 117, 113))
+        # Globe with a lighter teal halo.
+        cv.ellipse(x + 16, y + 10, x + 134, y + 128, fill=(90, 165, 158))
         cv.ellipse(x + 28, y + 20, x + 124, y + 116, fill=NAVY)
-        cv.ellipse(x + 30, y + 22, x + 122, y + 114, fill=(90, 170, 220))
-        cv.ellipse(x + 44, y + 34, x + 66, y + 54, fill=(80, 170, 90))
-        cv.ellipse(x + 74, y + 66, x + 98, y + 90, fill=(80, 170, 90))
-        cv.ellipse(x + 52, y + 80, x + 68, y + 98, fill=(80, 170, 90))
+        cv.ellipse(x + 30, y + 22, x + 122, y + 114, fill=(45, 86, 118))
+        cv.ellipse(x + 44, y + 34, x + 66, y + 54, fill=(79, 153, 100))
+        cv.ellipse(x + 74, y + 66, x + 98, y + 90, fill=(79, 153, 100))
+        cv.ellipse(x + 52, y + 80, x + 68, y + 98, fill=(79, 153, 100))
         cv.arc(x + 38, y + 40, x + 114, y + 92, 200, 340, fill=WHITE,
                width=1)
-        # Thermometer, far right.
-        cv.rect(x + 296, y + 20, x + 306, y + 110, fill=WHITE,
+        # Thermometer overlapping the globe's right edge.
+        cv.rect(x + 112, y + 20, x + 122, y + 108, fill=WHITE,
                 outline=INK, width=1)
-        cv.rect(x + 299, y + 66, x + 303, y + 108, fill=RED)
-        cv.ellipse(x + 292, y + 106, x + 310, y + 124, fill=RED)
-        cv.ellipse(x + 296, y + 110, x + 306, y + 120,
+        cv.rect(x + 115, y + 60, x + 119, y + 106, fill=RED)
+        cv.ellipse(x + 108, y + 104, x + 126, y + 122, fill=RED)
+        cv.ellipse(x + 112, y + 108, x + 122, y + 118,
                    fill=(255, 120, 120))
-        # Labels.
-        SANS_B(cv, 9, x + 140, y + 8, "DRAFT DEAL  \u2022  19 NOV", GREY)
-        _t = "FOSSIL FUELS"
-        SANS_B(cv, 15, x + 140, y + 24, _t, INK)
-        _fw = text_width("sans_bold", 15, _t)
-        cv.line(x + 138, y + 32, x + 140 + _fw, y + 32, fill=RED, width=3)
-        SANS_B(cv, 11, x + 140, y + 44, "$120BN ADAPTATION AID", RED)
-        # Draft document with red stamp ring.
-        cv.rect(x + 140, y + 64, x + 234, y + 122, fill=WHITE,
+        for _ty in (30, 40, 50, 60, 70, 80, 90, 100):
+            cv.line(x + 122, y + _ty, x + 126, y + _ty, fill=INK, width=1)
+        # Wide draft document on the right.
+        cv.rect(x + 138, y + 8, x + 306, y + 132, fill=WHITE,
                 outline=NAVY, width=1)
-        for _ly in (72, 79, 86, 93):
-            cv.line(x + 148, y + _ly, x + 226, y + _ly, fill=GREY, width=1)
-        cv.ellipse(x + 210, y + 100, x + 226, y + 114, fill=RED)
-        cv.ellipse(x + 213, y + 103, x + 223, y + 111, fill=WHITE)
-        # CUT stamp.
-        cv.rect(x + 246, y + 76, x + 306, y + 106, fill=None, outline=RED,
+        SANS_B(cv, 9, x + 148, y + 14, "DRAFT DEAL  \u2022  19 NOV", GREY)
+        _t = "FOSSIL FUELS"
+        SANS_B(cv, 18, x + 148, y + 30, _t, INK)
+        _fw = text_width("sans_bold", 18, _t)
+        cv.line(x + 146, y + 40, x + 148 + _fw, y + 40, fill=RED, width=3)
+        _t2 = "$120BN ADAPTATION AID"
+        SANS_B(cv, 11, x + 148, y + 54, _t2, RED)
+        _fw2 = text_width("sans_bold", 11, _t2)
+        cv.line(x + 146, y + 60, x + 148 + _fw2, y + 60, fill=RED,
                 width=2)
-        SANS_B(cv, 16, x + 276 - text_width("sans_bold", 16, "CUT") // 2,
-               y + 84, "CUT", RED)
+        for _ly in (76, 83, 90, 97):
+            cv.line(x + 148, y + _ly, x + 296, y + _ly, fill=GREY,
+                    width=1)
+        # Small red seal ring on the document.
+        cv.ellipse(x + 222, y + 106, x + 236, y + 120, fill=RED)
+        cv.ellipse(x + 225, y + 109, x + 233, y + 117, fill=WHITE)
+        # CUT stamp, bottom-right, overlapping the document corner.
+        cv.rect(x + 250, y + 102, x + 304, y + 128, fill=None,
+                outline=RED, width=2)
+        SANS_B(cv, 16, x + 277 - text_width("sans_bold", 16, "CUT") // 2,
+               y + 110, "CUT", RED)
+        # Dark bar with the summit name.
+        cv.rect(x, y + 148, x + w, y + h, fill=NAVY)
+        _t3 = "COP31  \u2022  ANTALYA"
+        SANS_B(cv, 9, x + (w - text_width("sans_bold", 9, _t3)) // 2,
+               y + 151, _t3, WHITE)
     elif kind == "ant19hero":
         # Anthropic IPO hero (user photo): Nasdaq tower screen, ANT,
         # +17.07%, rising chart, bull + IPO sign in the foreground.
